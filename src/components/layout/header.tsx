@@ -1,0 +1,2 @@
+import Link from "next/link";
+export function Header() { return <header className="border-b border-line bg-white"><div className="shell flex min-h-16 items-center justify-between gap-5"><Link href="/" className="font-extrabold tracking-tight text-xl text-brand">Campus Compass</Link><nav className="flex gap-4 text-sm font-semibold text-slate-600"><Link href="/colleges">Explore</Link><Link href="/compare">Compare</Link><Link href="/predictor">Predictor</Link></nav></div></header>; }

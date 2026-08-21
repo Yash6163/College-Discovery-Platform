@@ -1,0 +1,101 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum CollegeType {
+  GOVERNMENT
+  PRIVATE
+  DEEMED
+  AUTONOMOUS
+}
+enum ExamCode {
+  JEE_MAIN
+  NEET_UG
+  CAT
+}
+enum Category {
+  OPEN
+  OBC
+  SC
+  ST
+  EWS
+}
+
+model College {
+  id String @id @default(cuid())
+  slug String @unique
+  name String
+  city String
+  state String
+  address String
+  type CollegeType
+  establishedYear Int
+  description String @db.Text
+  annualFee Int
+  rating Float
+  ratingCount Int @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  courses Course[]
+  placements Placement[]
+  reviews Review[]
+  cutoffs Cutoff[]
+  @@index([name])
+  @@index([state, city])
+  @@index([type])
+  @@index([annualFee])
+  @@index([rating])
+}
+model Course {
+  id String @id @default(cuid())
+  collegeId String
+  name String
+  degree String
+  durationMonths Int
+  annualFee Int
+  college College @relation(fields: [collegeId], references: [id], onDelete: Cascade)
+  cutoffs Cutoff[]
+  @@index([collegeId])
+}
+model Placement {
+  id String @id @default(cuid())
+  collegeId String
+  year Int
+  averagePackage Int?
+  highestPackage Int?
+  placementPercentage Float?
+  recruiters String[]
+  college College @relation(fields: [collegeId], references: [id], onDelete: Cascade)
+  @@unique([collegeId, year])
+  @@index([collegeId, year])
+}
+model Review {
+  id String @id @default(cuid())
+  collegeId String
+  displayName String
+  rating Float
+  title String
+  body String @db.Text
+  createdAt DateTime @default(now())
+  college College @relation(fields: [collegeId], references: [id], onDelete: Cascade)
+  @@index([collegeId, createdAt])
+}
+model Cutoff {
+  id String @id @default(cuid())
+  collegeId String
+  courseId String?
+  exam ExamCode
+  category Category @default(OPEN)
+  year Int
+  openingRank Int
+  closingRank Int
+  college College @relation(fields: [collegeId], references: [id], onDelete: Cascade)
+  course Course? @relation(fields: [courseId], references: [id], onDelete: SetNull)
+  @@unique([collegeId, exam, courseId, category, year])
+  @@index([exam, closingRank])
+}

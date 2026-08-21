@@ -1,0 +1,3 @@
+import { fail, ok } from "@/lib/api";
+import { getComparison } from "@/services/college-service";
+export async function GET(request: Request) { const ids = (new URL(request.url).searchParams.get("ids") ?? "").split(",").map(x => x.trim()).filter(Boolean); if (ids.length < 2 || ids.length > 3) return fail(400, "VALIDATION_ERROR", "Provide between 2 and 3 college IDs."); if (new Set(ids).size !== ids.length) return fail(400, "VALIDATION_ERROR", "Duplicate colleges are not allowed."); try { const colleges = await getComparison(ids); if (colleges.length !== ids.length) return fail(404, "NOT_FOUND", "One or more colleges do not exist."); return ok(colleges); } catch { return fail(500, "INTERNAL_ERROR", "Unable to compare colleges."); } }
