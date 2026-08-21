@@ -1,3 +1,4 @@
+import "dotenv/config";
 import { CollegeType, ExamCode, PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 const schools = [
